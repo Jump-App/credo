@@ -23,6 +23,8 @@ defmodule Credo.CLI.Output.UI do
     def puts(_), do: nil
     def puts(_, color) when is_atom(color), do: nil
 
+    def write(_), do: nil
+
     def warn(_), do: nil
   else
     defdelegate puts, to: @shell_service
@@ -31,6 +33,8 @@ defmodule Credo.CLI.Output.UI do
     def puts(v, color) when is_atom(color) do
       @shell_service.puts([color, v])
     end
+
+    defdelegate write(v), to: @shell_service
 
     defdelegate warn(v), to: @shell_service
   end

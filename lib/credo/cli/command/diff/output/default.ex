@@ -328,18 +328,10 @@ defmodule Credo.CLI.Command.Diff.Output.Default do
       " ",
       first_line
     ]
-    |> UI.puts()
+    |> write_line()
 
     other_lines
     |> Enum.each(&print_issue_message(&1, issue, outer_color, message_color))
-  end
-
-  defp print_issue_message(
-         "",
-         _issue,
-         _outer_color,
-         _message_color
-       ) do
   end
 
   defp print_issue_message(
@@ -358,7 +350,18 @@ defmodule Credo.CLI.Command.Diff.Output.Default do
       " ",
       message
     ]
-    |> UI.puts()
+    |> write_line()
+  end
+
+  # The message may carry its own line breaks (e.g. multi-line check messages),
+  # so we write the content as-is and add a single trailing newline only when it
+  # does not already end with one. Using `UI.puts` here would double the breaks.
+  defp write_line(parts) do
+    UI.write(parts)
+
+    last = parts |> List.last() |> to_string()
+
+    unless String.ends_with?(last, "\n"), do: UI.puts("")
   end
 
   defp print_issue_line(
