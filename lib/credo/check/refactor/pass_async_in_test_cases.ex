@@ -38,11 +38,11 @@ defmodule Credo.Check.Refactor.PassAsyncInTestCases do
         :error ->
           {ast, put_issue(ctx, issue_for(ctx, meta, :default))}
 
-        {:ok, true} ->
-          {ast, ctx}
-
         {:ok, false} ->
           handle_explicit_async_false(ast, ctx)
+
+        {:ok, _not_false} ->
+          {ast, ctx}
       end
     else
       {ast, ctx}
