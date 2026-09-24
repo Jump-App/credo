@@ -261,7 +261,7 @@ defmodule Credo.CLI.Command.Suggest.Output.Default do
       :normal,
       message_color,
       " ",
-      first_line
+      first_line |> String.trim()
     ]
     |> UI.write_line()
 
@@ -277,7 +277,7 @@ defmodule Credo.CLI.Command.Suggest.Output.Default do
       :normal,
       message_color,
       " ",
-      message
+      message |> String.trim()
     ]
     |> UI.write_line()
   end
