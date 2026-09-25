@@ -34,6 +34,18 @@ defmodule Credo.Check.Warning.UnsafeExec do
     result.issues
   end
 
+  defp walk({:|>, _meta1, [_lhs, {{:., meta, call}, _, args}]} = ast, ctx) do
+    case get_forbidden_pipe(call, args) do
+      {bad, suggestion, trigger} ->
+        [module, _function] = call
+
+        {nil, put_issue(ctx, issue_for(ctx, meta, bad, suggestion, trigger, module))}
+
+      nil ->
+        {ast, ctx}
+    end
+  end
+
   defp walk({{:., meta, call}, _, args} = ast, ctx) do
     case get_forbidden_call(call, args) do
       {bad, suggestion, trigger} ->
@@ -63,6 +75,22 @@ defmodule Credo.Check.Warning.UnsafeExec do
   end
 
   defp get_forbidden_call(_, _) do
+    nil
+  end
+
+  defp get_forbidden_pipe([:os, :cmd], []) do
+    {":os.cmd/1", "System.cmd/2,3", ":os.cmd"}
+  end
+
+  defp get_forbidden_pipe([:os, :cmd], [_]) do
+    {":os.cmd/2", "System.cmd/2,3", ":os.cmd"}
+  end
+
+  defp get_forbidden_pipe([:erlang, :open_port], [_]) do
+    {":erlang.open_port/2 with `:spawn`", ":erlang.open_port/2 with `:spawn_executable`", ":erlang.open_port"}
+  end
+
+  defp get_forbidden_pipe(_, _) do
     nil
   end
 
